@@ -1,0 +1,20 @@
+# Specify the file paths that need to be modified in each case
+FILES_TO_MODIFY=system/blockMeshDict,system/blockMeshDict,system/blockMeshDict,constant/transportProperties
+
+# Specify the parameter names in those files that will be modified
+PARAMETERS_TO_MODIFY=distancePositive,distanceNegative,discreteNumber,nu
+
+# Define parameter values for each case
+CASE_VALUES=(
+"10,-10,20,1.0"
+"10,-10,20,0.08333333333333333"
+"10,-10,20,0.043478260869565216"
+"10,-10,20,0.029411764705882353"
+"10,-10,20,0.022222222222222223"
+"10,-10,20,0.017857142857142856"
+"10,-10,20,0.014925373134328358"
+"10,-10,20,0.01282051282051282"
+"10,-10,20,0.011235955056179775"
+"10,-10,20,0.01"
+"10,-10,40,1.0"
+)

@@ -1,0 +1,351 @@
+functions
+{
+	# includeFunc residuals
+
+// // // // COMPUTE FORCE COEFFICIENTS IN RUNTIME, FP 20241107 20h15
+forceCoeffs_object
+{
+  // rhoInf - reference density
+  // CofR - Centre of rotation
+  // dragDir - Direction of drag coefficient
+  // liftDir - Direction of lift coefficient
+  // pitchAxis - Pitching moment axis
+  // magUinf - free stream velocity magnitude
+  // lRef - reference length
+  // Aref - reference area
+  type forceCoeffs;
+  functionObjectLibs ("libforces.so");
+  //patches ("body1" "body2" "body3");
+  patches (square);
+
+  pName p;
+  Uname U;
+  rho rhoInf;
+  rhoInf 1.0;
+
+  //// Dump to file
+  log true;
+
+  CofR (0.0 0 0);
+  liftDir (0 1 0);
+  dragDir (1 0 0);
+  pitchAxis (0 0 1);
+  magUInf 1.0;
+  lRef 1;           // reference lenght for moments!!!
+  Aref 2.0;         // reference area 1 for 2d
+
+        writeControl   timeStep;
+        writeInterval  1;
+}
+
+
+
+/*
+
+domainminandmax
+{
+    type fieldMinMax;
+
+    functionObjectLibs ("libfieldFunctionObjects.so");
+
+    enabled true;
+
+    mode component;
+
+    writeControl timeStep;
+    writeInterval 1;
+
+    log true;
+
+    fields (p U k omega nut);
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+forces_object
+{
+    type forces;
+    functionObjectLibs ("libforces.so");
+
+    enabled true;
+
+    //writeControl outputTime;
+    writeControl   timeStep;
+    writeInterval  1;
+
+    patches ("square");
+
+    pName p;
+    Uname U;
+
+    ////Density only for incompressible flows
+    rho    rhoInf;	//rhoName in OF3x - rho in OF4x/OF5x
+    rhoInf 1000;	//1.225;
+    
+    ////Centre of rotation
+    CofR (0 0 0);
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+probes1
+{
+    type probes;
+    functionObjectLibs ("libsampling.so");
+    //dictionary probesDict;
+    probeLocations
+    (
+	(0.025 0 0)
+	(0.05 0 0)
+	(0.075 0 0)
+	(0.1 0 0)
+	(0.15 0 0)
+	(0.3 0 0)
+	(0.5 0 0)
+    );
+    fields
+    (p U);
+
+    writeControl       timeStep;
+    writeInterval      1;
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+yplus
+{
+    type                yPlus;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+
+    enabled true;
+
+    writeControl outputTime;
+    //writeControl timeStep;
+    //writeInterval 1;
+
+    //log true;
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+Q
+{
+    type                Q;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+
+    enabled true;
+
+    writeControl outputTime;
+    //writeControl timeStep;
+    //writeInterval 1;
+
+    //log true;
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+additional_fields
+{
+    type writeRegisteredObject;
+    functionObjectLibs ( "libIOFunctionObjects.so" );
+    
+    objectNames ("rho");	
+
+    enabled           off;
+    writeControl     outputTime;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+    fieldAverage
+    {
+        type            fieldAverage;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+        enabled         true;
+        writeControl   outputTime;
+
+        //writeControl   timeStep;
+        //writeInterval  100;
+
+        //cleanRestart true;
+
+        timeStart       100;
+        //timeEnd         200;
+
+        fields
+        (
+            U
+            {
+                mean        on;
+                prime2Mean  on;
+                base        time;
+            }
+
+            p
+            {
+                mean        on;
+                prime2Mean  on;
+                base        time;
+            }
+        );
+    }
+*/
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+probes_online_a_posteriori
+{
+    type probes;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    writeControl timeStep;
+    writeInterval 1;
+
+    probeLocations  // some probes, I put them in a random way...
+    ( 
+        (0 0 0)
+        (0 1 0)
+        (1 1. 0)
+    );
+
+    fields
+    (   
+        U 
+        p
+     );
+
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+vorticity_a_posteriori
+{
+    type vorticity;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    log	true;
+    writeControl outputTime;   
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+writeCellVolumes
+{
+    type writeCellVolumes;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    log	true;
+    writeControl outputTime;   
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+CourantNo
+{
+    type CourantNo;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    log	true;
+    writeControl outputTime;   
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+
+shearStress
+{
+    type shearStress;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    log	true;
+    writeControl outputTime;   
+    patches (bottom_2);
+}
+
+wallShearStress
+{
+    type wallShearStress;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled true;
+    log	true;
+    writeControl outputTime;   
+    patches (bottom_2);
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+/*
+CourantNo
+Lambda2
+MachNo
+PecletNo
+Q
+XiReactionRate
+add
+age
+blendingFactor
+comfort
+components
+cylindrical
+ddt
+div
+divide
+enstrophy
+fieldAverage
+fieldCoordinateSystemTransform
+fieldValueDelta
+flowType
+grad
+histogram
+interfaceHeight
+log
+mag
+magSqr
+multiply
+nearWallFields
+patchProbes
+pressure
+probes
+processorField
+psiReactionThermoMoleFractions
+randomise
+readFields
+regionSizeDistribution
+rhoReactionThermoMoleFractions
+scale
+sets
+shearStress
+streamFunction
+streamlines
+subtract
+surfaceFieldValue
+surfaceInterpolate
+surfaces
+totalEnthalpy
+turbulenceFields
+turbulenceIntensity
+uniform
+volFieldValue
+vorticity
+wallHeatFlux
+wallHeatTransferCoeff
+wallShearStress
+writeCellCentres
+writeCellVolumes
+yPlus
+*/
+
+}
+
+

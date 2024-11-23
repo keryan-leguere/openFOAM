@@ -1,0 +1,254 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |				
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9                                   	
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location 	"system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+//    default         backward;			//second order, implicit
+//    default         Euler;			//first order, bounded, implicit
+//    default         CrankNicolson 0;  	//1 is full CN, Second order, bounded, implicit
+      default         steadyState;
+						//0 is equivalent to Euler
+//////////////////////////////////////////////////////////////////////////////////////
+/*
+CoEuler
+CrankNicolson
+Euler
+SLTS
+backward
+bounded
+localEuler		//Local-time step, first order, bounded, implicit 
+steadyState		//Steady state.  Does not solve for time derivatives 
+*/
+//////////////////////////////////////////////////////////////////////////////////////
+}
+
+gradSchemes
+{
+        //default         Gauss linear;
+  	//default 	  leastSquares;
+  	//default 	  fourth;
+
+      	//default         cellMDLimited Gauss linear 0;
+	//default         cellMDLimited Gauss linear 0.777;
+	//default         cellMDLimited Gauss linear 0.5;
+  	//default         cellMDLimited Gauss linear 0.333;
+  	//default         cellMDLimited Gauss linear 0;
+	
+        //default         cellMDLimited Gauss linear 1.0;
+	//default         cellLimited Gauss linear   1.0;
+	  
+      	//default         faceMDLimited Gauss linear 1.0;
+	//default         faceLimited Gauss linear   1.0;
+	  
+  	default 	  cellLimited Gauss linear 0.5;
+    	//default 	  cellLimited leastSquares 0.5;
+
+  	//grad(T)         cellLimited Gauss linear 1.0;
+  	//grad(T)         cellLimited leastSquares 0.333;
+  	grad(U)           cellLimited Gauss linear 1.0;
+
+  	//limitedGrad(T)  faceLimited Gauss linear 1.0;
+        //unboundedGrad(T) 	      Gauss linear;
+
+//////////////////////////////////////////////////////////////////////////////////////
+/*
+Gauss			//Second order, Gaussian integration 
+cellLimited		//Cell limited version of the grad schemes
+cellMDLimited		//Cell limited version of the grad schemes
+edgeCellsLeastSquares
+faceLimited		//Face limited version of the grad schemes
+faceMDLimited		//Face limited version of the grad schemes
+fourth			//Fourth order, least squares
+leastSquares		//Second order, least squares
+pointCellsLeastSquares
+*/
+//////////////////////////////////////////////////////////////////////////////////////
+}
+
+divSchemes
+{
+     default         none;
+
+    div(phi,U)                   Gauss linearUpwind grad(U);
+    div(phi,omega)               Gauss linearUpwind default;
+    div(phi,epsilon) 		 Gauss linearUpwind default;
+    div(phi,k) 	                 Gauss linearUpwind default;
+    div(phi,v2)			 Gauss linearUpwind default;
+    div(nonlinearStress)	  Gauss linear;
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+
+//  div(phi,T)      Gauss linear;			//Second order, unbounded
+//  div(phi,T)      Gauss upwind;			//First order, bounded 
+//  div(phi,T)      Gauss linearUpwind grad(T);		//First/second order, bounded 
+//  div(phi,T)      Gauss linearUpwind limitedGrad(T);	//First/second order, bounded
+
+//  div(phi,T)      Gauss QUICK;			//First/second order, bounded 
+//  div(phi,T)      Gauss limitWith QUICK Minmod;
+//  div(phi,T)      Gauss limitWith QUICK SuperBee;
+//  div(phi,T)      Gauss limitWith QUICK vanAlbada;
+    
+//  div(phi,T)      Gauss MUSCL;			//MUSCL scheme
+//  div(phi,T)      Gauss limitedMUSCL -2 2;		//MUSCL scheme bounded between -2 and 2
+//  div(phi,T)      Gauss MUSCL01;			//MUSCL scheme strictly bounded between  0 and 1
+
+//  div(phi,T)      Gauss limitedLinear 1;		//TVD scheme	
+//  div(phi,T)      Gauss limitedLinear01 1;		//TVD scheme
+
+//  div(phi,T)      Gauss filteredLinear;		//Linear scheme with filtering for high-frequency ringing
+//  div(phi,T)      Gauss reverseLinear;
+
+//  div(phi,T)      Gauss cubic;
+//  div(phi,T)      Gauss limitWith cubic Minmod;
+//  div(phi,T)      Gauss limitedCubic 1;		//TVD scheme
+//  div(phi,T)      Gauss limitedCubic01 1;		//TVD scheme
+
+//  div(phi,T)      Gauss SFCD;			        //NVD scheme.  Self-filtered central differencing 
+
+//  div(phi,T)      Gauss Gamma 1;			//NVD scheme.  
+//  div(phi,T)      Gauss Gamma01 1;			//NVD scheme.  
+
+//  div(phi,T)      Gauss vanLeer;			//TVD scheme
+//  div(phi,T)      Gauss limitedVanLeer 0 1;		//TVD scheme
+
+//  div(phi,T)      Gauss OSPRE;			//TVD scheme
+
+//  div(phi,T)      Gauss vanAlbada;			//TVD scheme
+
+//  div(phi,T)      Gauss Minmod;			//TVD scheme
+
+//  div(phi,T)      Gauss SuperBee;			//TVD scheme
+
+//  div(phi,T)      Gauss UMIST;			//TVD scheme
+
+//  div(phi,T)      Gauss downwind;			//Totally useless scheme. Unconditionally unstable
+
+/*
+Linear-upwind stabilised transport (LUST) is a new interpolation schemes in which 
+linear-upwind is blended with linear interpolation to stabilise solutions while 
+maintaining second-order behaviour
+*/
+//  div(phi,T)      Gauss LUST Grad(T); 
+//  div(phi,T)      Gauss LUST unboundedGrad(T);
+
+//  div(phi,T)      Gauss midPoint;
+
+//  div(phi,T)      Gauss blended 1;
+
+//////////////////////////////////////////////////////////////////////////////////////
+/*
+CoBlended
+Gamma
+Gamma01
+LUST
+MUSCL
+MUSCL01
+Minmod
+OSPRE
+QUICK
+SFCD
+SuperBee
+UMIST
+biLinearFit
+blended
+clippedLinear
+cubic
+cubicUpwindFit
+downwind
+filteredLinear
+filteredLinear2
+filteredLinear3
+fixedBlended
+harmonic
+limitWith
+limitedCubic
+limitedCubic01
+limitedGamma
+limitedLimitedCubic
+limitedLimitedLinear
+limitedLinear
+limitedLinear01
+limitedMUSCL
+limitedVanLeer
+limiterBlended
+linear
+linearFit
+linearPureUpwindFit
+linearUpwind
+localBlended
+localMax
+localMin
+midPoint
+outletStabilised
+pointLinear
+quadraticFit
+quadraticLinearFit
+quadraticLinearUpwindFit
+quadraticUpwindFit
+reverseLinear
+skewCorrected
+upwind
+vanAlbada
+vanLeer
+vanLeer01
+weighted
+*/
+////////////////////////////////////////////////////////////////////////////////////// 
+}
+
+laplacianSchemes
+{
+    default         Gauss linear limited 0.5;
+  //laplacian(DT,T) Gauss linear orthogonal;
+  //laplacian(DT,T) Gauss linear faceCorrected;
+  //laplacian(DT,T) Gauss linear corrected;
+  //laplacian(DT,T) Gauss linear uncorrected;
+  //laplacian(DT,T) Gauss linear limited 1;
+  //laplacian(DT,T) Gauss linear limited 1;
+
+//////////////////////////////////////////////////////////////////////////////////////
+/*
+corrected			//Unbounded, second order, conservative 
+uncorrected			//Bounded, first order, non-conservative 
+faceCorrected
+orthogonal			//For orthogonal meshes, no corrections
+limited				//Blend of corrected and uncorrected	
+				//1 corresponds to corrected
+				//0 corresponds to uncorrected
+linearFit
+quadraticFit
+*/
+//////////////////////////////////////////////////////////////////////////////////////
+}
+
+interpolationSchemes
+{
+    default         linear;
+//////////////////////////////////////////////////////////////////////////////////////
+//How to interpolate the cell center values to the face centers
+//////////////////////////////////////////////////////////////////////////////////////
+}
+
+snGradSchemes
+{
+    default         limited 0.5;
+//////////////////////////////////////////////////////////////////////////////////////
+/*
+Same as in laplacianSchemes
+*/
+//////////////////////////////////////////////////////////////////////////////////////
+}
+
+// ************************************************************************* //

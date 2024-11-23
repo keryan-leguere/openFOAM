@@ -1,0 +1,146 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  6                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver           GAMG;
+        tolerance        1e-6;
+        relTol           0.01;
+        smoother         GaussSeidel;
+        nPreSweeps       0;
+        nPostSweeps      2;
+        cacheAgglomeration on;
+        agglomerator     faceAreaPair;
+        nCellsInCoarsestLevel 100;
+        mergeLevels      1;
+	minIter		 3;
+    }
+
+    "(U|k|epsilon|omega|f|v2)"
+    {
+        //solver           smoothSolver;
+        //smoother         GaussSeidel;
+        //tolerance        1e-8;
+        //relTol           0.0;
+        //nSweeps          1;
+
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          0.001;
+	// On peut decendre a 0 en cours de route si besoin
+    }
+
+    // // // ADDITIONAL ONES, required by potentialFoam FP 20241107
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+    
+    Phi
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-06;
+        relTol          0;
+    }
+
+
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 2;
+    pRefCell        0;
+    pRefValue       0;
+
+    consistent on;
+
+    residualControl
+    {
+        p               1e-3;
+        U               1e-3;
+        "(k|epsilon|omega|f|v2)" 1e-3;
+    }
+}
+// // // ADAPTED TO RUN ON pisoFoam as well, FP 20241107 20h07
+PISO
+{
+    nCorrectors     2;
+    nNonOrthogonalCorrectors 1;
+    pRefCell        0;
+    pRefValue       0;
+
+    consistent on;
+
+//    residualControl
+//    {
+//        p               1e-3;
+//        U               1e-3;
+//        nuTilda         1e-3;
+//        k               1e-3;
+//        omega           1e-3;
+//    }
+}
+
+// // // ADDITIONAL ONES, required by potentialFoam FP 20241107
+potentialFlow
+{
+/*
+    pRefCell        0;
+    pRefValue       0;
+*/
+
+    nNonOrthogonalCorrectors 10;
+}
+
+
+/*
+//SIMPLE with default URF diverges at one point early in the simulation
+relaxationFactors
+{
+    fields
+    {
+        p               0.3;
+    }
+    equations
+    {
+        U               0.7;
+        k               0.7;
+        omega           0.7;
+	nut		0.7;
+    }
+}
+*/
+
+//SIMPLEC URF
+relaxationFactors
+{
+    fields
+    {
+        p               0.7;
+    }
+        equations
+    {
+        U               0.7; // 0.9 is more stable but 0.95 more convergent
+        ".*"            0.7; // 0.9 is more stable but 0.95 more convergent
+    }
+}
+
+// ************************************************************************* //
